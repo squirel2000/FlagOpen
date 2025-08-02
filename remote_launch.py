@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import subprocess
 import time
@@ -31,6 +32,16 @@ def launch_in_new_terminal(command, title, debug=False):
     print(f"   Command: {command}")
     subprocess.Popen(full_command, shell=True)
 
+def is_redis_running():
+    """Checks if redis-server is already running."""
+    try:
+        # Use pgrep to check for the process. -x ensures an exact match.
+        subprocess.run(['pgrep', '-x', 'redis-server'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        # CalledProcessError means pgrep ran but found no process (exit code 1)
+        # FileNotFoundError means pgrep is not installed
+        return False
 
 def main():
     """Main function to check prerequisites and launch all components."""
@@ -43,10 +54,19 @@ def main():
     print("\nPreparing and Launching commands...")
 
     commands = [
-        {"title": "Message Broker (Redis)", "command": "redis-server"},
         {"title": "LLM Server (RoboBrain 2.0)", "command": f"cd {ROBOBRAIN_PATH} && python robobrain_server.py"},
         {"title": "RoboOS Master", "command": f"cd {ROBOOS_PATH} && python master/run.py"},
     ]
+
+    # Check if Redis needs to be launched
+    if not is_redis_running():
+        print("Redis server not found, launching it...")
+        # Note: This assumes redis.conf is in the SCRIPT_DIR, which is the root of the project.
+        redis_conf_path = os.path.join(SCRIPT_DIR, 'redis.conf')
+        commands.insert(0, {"title": "Message Broker (Redis)", "command": f"redis-server {redis_conf_path}"})
+    else:
+        print("✅ Redis server is already running.")
+
 
     for component in commands:
         launch_in_new_terminal(component["command"], component["title"], debug=args.debug)
