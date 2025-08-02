@@ -1,4 +1,7 @@
-# Step-by-Step Installation and Setup
+# Instruction for RoboOS and RoboBrain 2.0
+
+
+## Step-by-Step Installation and Setup
 
 ### Step 1: System Prerequisites
 First, let's set up your environment.
@@ -8,7 +11,7 @@ First, let's set up your environment.
 sudo apt update
 
 # Install Redis Server
-sudo apt install redis-server
+sudo apt install redis-server -y
 
 # Start Redis and enable it to run on boot
 sudo systemctl start redis-server
@@ -34,7 +37,7 @@ conda activate roboos
 
 ```bash
 # Clone the repository
-git clone https://github.com/FlagOpen/RoboOS.git
+git clone https://github.com/squirel2000/RoboOS.git
 cd RoboOS
 
 # Install the required Python packages
@@ -47,10 +50,25 @@ pip install transformers torch accelerate bitsandbytes
 # If you want to use the Hugging Face Hub, ensure you have the latest version
 pip install --upgrade huggingface_hub
 huggingface-cli login
+
+# Token for the RoboBrain:
+#   HF_TOKEN is exported in ~/.bashrc
+# 
+# Token is valid (permission: fineGrained).
+# The token `RoboBrain` has been saved to /home/asus/.cache/huggingface/stored_tokens
+# Your token has been saved in your configured git credential helpers (store).
+# Your token has been saved to /home/asus/.cache/huggingface/token
+# Login successful.
 ```
 
 ### Step 4: Configure the LLM (Simulating RoboBrain 2.0)
 ```bash
+# Clone the repository
+git clone https://github.com/squirel2000/RoboBrain2.0.git
+cd RoboBrain2.0
+
+# Install the required Python packages
+pip install -r requirements.txt
 ```
 
 ## Communication: MCP and ROS2 Integration
@@ -72,41 +90,22 @@ Simulation Platforms:
 
 ## Final Launch Procedure
 
-### Terminal 1: Start Redis (if not already running)
+### On the local machine:
 ```bash
-redis-server
+conda activate roboos
+# Launch the simultion environmnet
+# 1. TurtleBot3 Gazebo simulation (with TURTLEBOT3_MODEL=waffle) and RViz
+# 2. teleop, cartographer SLAM or Nav2 Stack
+# 3. RoboOS Slaver (ROS2 Bridge)
+python3 local_launch.py
 ```
 
-### Terminal 2: Launch TurtleBot3 Simulation & Nav2
-```bash
-# Source your ROS2 workspace
-source ~/turtlebot3_ws/install/setup.bash
-
-# Export the TurtleBot3 model
-export TURTLEBOT3_MODEL=waffle
-
-# Launch the simulation with the Nav2 stack
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=/path/to/your/map.yaml
-```
-
-### Terminal 3: Start the RoboOS Master
+### On the remote server:
 ```bash
 # Activate conda environment
 conda activate roboos
-cd ~/Gits/FlagOpen/RoboOS
-
-# This will load the LLM and wait for slaver connections
-python master/run.py 
-```
-
-### Terminal 4: Start the RoboOS Slaver (ROS2 Bridge)
-```bash
-# Activate conda environment
-conda activate roboos
-cd ~/Gits/FlagOpen/RoboOS
-
-# This script now connects to Redis and ROS2
-python slaver/run.py
+# Start Redis, RoboOS Master, and RoboBrain 2.0 with the debug mode
+python3 remote_launch.py -d
 ```
 
 ### Terminal 5: Send the Initial Command
