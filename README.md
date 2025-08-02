@@ -90,22 +90,22 @@ Simulation Platforms:
 
 ## Final Launch Procedure
 
-### On the local machine:
-```bash
-conda activate roboos
-# Launch the simultion environmnet
-# 1. TurtleBot3 Gazebo simulation (with TURTLEBOT3_MODEL=waffle) and RViz
-# 2. teleop, cartographer SLAM or Nav2 Stack
-# 3. RoboOS Slaver (ROS2 Bridge)
-python3 local_launch.py
-```
-
 ### On the remote server:
 ```bash
 # Activate conda environment
 conda activate roboos
 # Start Redis, RoboOS Master, and RoboBrain 2.0 with the debug mode
 python3 remote_launch.py -d
+```
+
+### On the local machine:
+```bash
+conda activate roboos
+# Launch the simultion environmnet
+# 1. TurtleBot3 Gazebo simulation (with TURTLEBOT3_MODEL=waffle) and RViz
+# 2. teleop, cartographer SLAM or Nav2 Stack
+# 3. RoboOS Slaver (ROS2 Bridge) - modify the Hostname or IP address of the server in RoboOS/slaver/config.yaml
+python3 local_launch.py
 ```
 
 ### Terminal 5: Send the Initial Command

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import subprocess
 import time
@@ -38,9 +39,9 @@ def main():
     print("\nPreparing and Launching commands...")
 
     commands = [
+        {"title": "RoboOS Slaver", "command": f"source /home/asus/miniforge3/etc/profile.d/conda.sh && conda activate roboos && cd {ROBOOS_PATH} && python slaver/run.py"},
         {"title": "Gazebo", "command": "ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py"},
-        {"title": "RViz", "command": "ros2 launch turtlebot3_bringup rviz2.launch.py"},
-        {"title": "RoboOS Slaver", "command": f"cd {ROBOOS_PATH} && python slaver/run.py"},
+        {"title": "RViz", "command": "ros2 launch turtlebot3_bringup rviz2.launch.py"},        
     ]
 
     if args.teleop:
