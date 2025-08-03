@@ -40,7 +40,7 @@ def main():
 
     commands = [
         {"title": "RoboOS Slaver", "command": f"source /home/asus/miniforge3/etc/profile.d/conda.sh && conda activate roboos && cd {ROBOOS_PATH} && python slaver/run.py"},
-        {"title": "Gazebo", "command": "ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py"},
+        {"title": "Gazebo", "command": "ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py headless:=true"},
     ]
 
     if not args.nav:  # nav2 has included the RViz.
