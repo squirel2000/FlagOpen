@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import subprocess
 import time
@@ -7,7 +8,7 @@ import argparse
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROBOOS_PATH = os.path.join(SCRIPT_DIR, "RoboOS")
-MAP_PATH = "$HOME/map.yaml"
+MAP_PATH = os.path.join(SCRIPT_DIR, "map.yaml")
 
 def parse_args():
     """Parses command-line arguments."""
@@ -38,17 +39,18 @@ def main():
     print("\nPreparing and Launching commands...")
 
     commands = [
-        {"title": "Gazebo", "command": "ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py"},
-        {"title": "RViz", "command": "ros2 launch turtlebot3_bringup rviz2.launch.py"},
-        {"title": "RoboOS Slaver", "command": f"cd {ROBOOS_PATH} && python slaver/run.py"},
+        {"title": "RoboOS Slaver", "command": f"source /home/asus/miniforge3/etc/profile.d/conda.sh && conda activate roboos && cd {ROBOOS_PATH} && python slaver/run.py"},
+        {"title": "Gazebo", "command": "ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py headless:=true"},
     ]
 
+    if not args.nav:  # nav2 has included the RViz.
+        commands.append({"title": "RViz", "command": "ros2 launch turtlebot3_bringup rviz2.launch.py"})
     if args.teleop:
         commands.append({"title": "Teleop Keyboard", "command": "ros2 run turtlebot3_teleop teleop_keyboard"})
     if args.slam:
         commands.append({"title": "SLAM", "command": "ros2 launch turtlebot3_cartographer cartographer.launch.py use_sim_time:=True"})
     if args.nav:
-        commands.append({"title": "Navigation", "command": f"ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:{MAP_PATH}"})
+        commands.append({"title": "Navigation", "command": f"ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:={MAP_PATH}"})
 
     for component in commands:
         launch_in_new_terminal(component["command"], component["title"], debug=args.debug)
