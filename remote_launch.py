@@ -3,6 +3,7 @@ import os
 import subprocess
 import time
 import argparse
+import webbrowser
 
 # This script is designed to launch the RoboOS (Master) and RoboBrain2.0 system components in separate terminal windows on the remote server.
 
@@ -56,6 +57,7 @@ def main():
     commands = [
         {"title": "LLM Server (RoboBrain 2.0)", "command": f"cd {ROBOBRAIN_PATH} && python robobrain_server.py"},
         {"title": "RoboOS Master", "command": f"cd {ROBOOS_PATH} && python master/run.py"},
+        {"title": "Gradio UI", "command": f"cd {ROBOOS_PATH} && python gradio_ui.py"},
     ]
 
     # Check if Redis needs to be launched
@@ -73,6 +75,10 @@ def main():
         time.sleep(2)  # Stagger the launches slightly
 
     print("\n✅ All components launched. Please check the new terminal windows for status and logs.")
+    print("Opening Gradio UI in your browser...")
+    # Give the Gradio server a moment to start
+    time.sleep(5)
+    webbrowser.open("http://127.0.0.1:7860")
 
 
 if __name__ == "__main__":
